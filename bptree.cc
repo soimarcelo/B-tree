@@ -149,10 +149,9 @@ nonleaf_split(NODE* current_internal, int key, NODE* old_chi, NODE* new_chi){
 		temp->chi[1] = (NODE *)new_chi;
 	}
 	else {
-		for (int i=0; key > temp->nkey&&temp->nkey<N; i++){ //前半をまずコピー
+		for (int i=0; key > current_internal->key[i]; i++){ //前半をまずコピー
 			temp->key[i] = current_internal->key[i];
 			temp->chi[i] = current_internal->chi[i];
-			temp->nkey++;
 		}
 
 		temp->key[(temp->nkey)-1] = key;
@@ -162,7 +161,6 @@ nonleaf_split(NODE* current_internal, int key, NODE* old_chi, NODE* new_chi){
 		for (int i=temp->nkey+1; i<N+1; i++){ //後半をコピー
 			temp->key[i] = current_internal->key[i-1];
 			temp->chi[i] = current_internal->chi[i-1];
-			temp->nkey++;
 		}
 	}
 
@@ -194,9 +192,11 @@ nonleaf_split(NODE* current_internal, int key, NODE* old_chi, NODE* new_chi){
 		if (i + mid + 1 >= N) break; // 配列範囲外を避ける
 		new_internal->key[i] = temp->key[i + mid + 1];
 		new_internal->chi[i] = temp->chi[i + mid + 1];
+		new_internal->chi[i]->parent = new_internal; // ここを追加
 		new_internal->nkey++;
 	}
 	new_internal->chi[N - mid - 1] = temp->chi[N]; // ここも配列範囲外を避ける
+	new_internal->chi[N - mid - 1]->parent = new_internal; // ここを追加
 
 	//親ノードにを繰り上げる
 	insert_into_parent(current_internal->parent, temp->key[mid],current_internal, new_internal);
@@ -341,7 +341,6 @@ interactive()
 
   return key;
 }
-
 int main(int argc, char *argv[])
 {
     struct timeval begin, end;
@@ -351,65 +350,14 @@ int main(int argc, char *argv[])
     printf("-----Insert-----\n");
     begin = cur_time();
 
-// 1回目の挿入と木の状態の印刷
-    insert(1, NULL);
-    print_tree(Root);
-
-    // 2回目の挿入と木の状態の印刷
-    insert(3, NULL);
-    print_tree(Root);
-
-    // 3回目の挿入と木の状態の印刷
-    insert(10, NULL);
-    print_tree(Root);
-
-    // 4回目の挿入と木の状態の印刷
-    insert(15, NULL);
-    print_tree(Root);
-
-    // 5回目の挿入と木の状態の印刷
-    insert(6, NULL);
-    print_tree(Root);
-
-    // 6回目の挿入と木の状態の印刷
-    insert(22, NULL);
-    print_tree(Root);
-
-    // 7回目の挿入と木の状態の印刷
-    insert(30, NULL);
-    print_tree(Root);
-
-    // 8回目の挿入と木の状態の印刷
-    insert(20, NULL);
-    print_tree(Root);
-
-    // 9回目の挿入と木の状態の印刷
-    insert(50, NULL);
-    print_tree(Root);
-
-    // 10回目の挿入と木の状態の印刷
-    insert(55, NULL);
-    print_tree(Root);
-
-    // 11回目の挿入と木の状態の印刷
-    insert(40, NULL);
-    print_tree(Root);
-
-    // 12回目の挿入と木の状態の印刷
-    insert(60, NULL);
-    print_tree(Root);
-
-    // 13回目の挿入と木の状態の印刷
-    insert(8, NULL);
-    print_tree(Root);
-
+	for (int i = 100; i >1; i--) {
+		insert(i, NULL);
+	}
+	print_tree(Root);
     end = cur_time();
 
     return 0;
 }
-
-
-
 // int
 // main(int argc, char *argv[])
 // {
