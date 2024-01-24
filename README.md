@@ -1,5 +1,6 @@
 # B-tree
 - A simple implementation of a B+ tree data structure.
+- Confirmed operation for 1 million insertions in both ascending and descending order.
 
 An example output
 ```
