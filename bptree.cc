@@ -1,6 +1,7 @@
 #include "bptree.h"
 #include <vector>
 #include <sys/time.h>
+#include <iostream>
 
 NODE *alloc_leaf(NODE *parent);
 NODE *alloc_parent(NODE *parent);
@@ -45,6 +46,25 @@ find_leaf(NODE *node, int key)
 	}
 
 	return find_leaf(node->chi[kid], key);
+}
+
+NODE*
+search(NODE *node, int key){
+	NODE* leaf = find_leaf(node, key);
+	int i;
+	for (i=0; i<leaf->nkey; i++){
+		if (leaf->key[i] == key) break;
+	}
+	if (i == leaf->nkey){
+		cout << "Key " << key << " not found" << endl;
+		return NULL;
+	}
+	else {
+    cout << "Key " << key << " found in leaf: ";
+    print_tree(leaf); // ここでツリーを出力
+    cout << endl; // 改行を追加
+    return leaf;
+	}
 }
 
 NODE *
@@ -325,6 +345,25 @@ insert(int key, DATA *data)
 	}
 }
 
+void update(int key, DATA *data){
+
+	NODE* leaf;
+	leaf = find_leaf(Root, key);
+	int i;
+	for (i=0; i<leaf->nkey; i++){
+		if (leaf->key[i] == key){
+			leaf->chi[i] = (NODE *)data;
+			cout << "Key " << key << " updated" << endl;
+			return;
+			}
+		else {
+			cout << "Key " << key << " not found" << endl;
+			return;
+		}
+	}
+
+}
+
 void
 init_root(void)
 {
@@ -350,10 +389,12 @@ int main(int argc, char *argv[])
     printf("-----Insert-----\n");
     begin = cur_time();
 
-	for (int i = 100; i >1; i--) {
+	for (int i = 1; i < 1000000; i++) {
 		insert(i, NULL);
 	}
 	print_tree(Root);
+	update(1, NULL);
+
     end = cur_time();
 
     return 0;
